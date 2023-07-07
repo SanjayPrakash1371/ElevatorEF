@@ -23,28 +23,7 @@ namespace ElevatorEF.Controllers
 
             var result= await context.Employees.ToListAsync();
 
-            result.ForEach(x =>
-            {
-                if(x.Name.Equals("Abi"))
-                {
-                    x.Name = "🧍‍♂️";                }
-                else if(x.Name.Equals("Sanjay"))
-                {
-                    x.Name = "🏃‍♂️";
-                }
-            else if (x.Name.Equals("Sadham"))
-                {
-                    x.Name = "🕴";
-                }
-            else if(x.Name.Equals("Prasi"))
-                {
-                    x.Name = "⛹️‍♂️";
-                }
-            else if (x.Name.Equals("Selvi"))
-                {
-                    x.Name = "🧍‍♀️";
-                }
-            });
+           
 
            
 
@@ -60,7 +39,7 @@ namespace ElevatorEF.Controllers
         public  async Task<ActionResult<Employee>> Get([FromRoute] int id)
         {
             var result= await context.Employees.FirstOrDefaultAsync(x=>x.Id==id);
-            result.Name = "😀😀";
+            //result.Name = "😀😀";
 
             if(result==null)
             {
