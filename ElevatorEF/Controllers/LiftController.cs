@@ -46,6 +46,7 @@ namespace ElevatorEF.Controllers
             return Ok(result);
         }
 
+
         [HttpPost]
         public async Task<ActionResult<LiftLog>> Post(NewLog newlog)
         {

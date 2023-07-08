@@ -15,6 +15,8 @@ namespace DataAccess.DbAccess
         {
         }
 
+        public AllDbContext() { }   
+
         public DbSet<Employee> Employees { get; set; }
 
         public DbSet<ElevatorLogAccess> ElevatorLogs { get; set; }

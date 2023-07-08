@@ -1,10 +1,8 @@
 ﻿using DataAccess.DbAccess;
 using ElevatorEF.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Models;
-using System.Collections.Generic;
 
 namespace ElevatorEF.Controllers
 {
@@ -14,9 +12,12 @@ namespace ElevatorEF.Controllers
     {
         private readonly AllDbContext context;
 
+       
+
         public LogfinderCOntroller(AllDbContext context)
         {
             this.context = context;
+        
         }
 
         [HttpGet]
@@ -24,10 +25,27 @@ namespace ElevatorEF.Controllers
         {
             var result= await context.elevatorLoggings.ToListAsync();
 
-            result.ForEach(x => {
+            result.ForEach(async x => {
                
               //  x.liftlog.employee = context.Employees.FirstOrDefault(y => y.Id == x.liftlog.empId);
-                x.liftlog = context.LiftLogs.Find(x.logLiftId);
+                LiftLog? liftlog =    context.LiftLogs.Find(x.logLiftId);
+
+              //  Console.WriteLine(liftlog);
+
+               if(liftlog!=null)
+                {
+                    Employee employee =  context.Employees.FirstOrDefault(emp => emp.Id == liftlog.empId);
+
+                    if (employee != null)
+                    {
+                        liftlog.employee = employee;
+
+                        x.liftlog = liftlog;
+                    }
+                }
+
+
+
                 /* Employee? emp= new Employee();
                  emp = context.Employees.Find(x?.liftlog?.empId);
                  //
@@ -38,7 +56,60 @@ namespace ElevatorEF.Controllers
                 x.ElevatorLogAccess = context.ElevatorLogs.Find(x.elogId);
 
             });
-            return Ok(result);
+
+            return result;
+
+
+          /*  var q = await (from elevator in context.ElevatorLogs
+                           join elog in context.elevatorLoggings on elevator.Id equals elog.elogId
+                           join liftlog in context.LiftLogs on elog.logLiftId equals liftlog.id
+                           select new
+                           {
+
+                               elog.Id,
+                               elog.elogId,
+                               elog.logLiftId,
+                               elevator.floorno,
+                               elevator.weight,
+                               elevator.dateTime,
+                               liftlog.id
+
+
+                           }).ToListAsync();*/
+
+            /*
+                        var q =  (from elevator in context.ElevatorLogs
+                                 join elog in context.elevatorLoggings on elevator.Id equals elog.elogId
+                                 join liftlog in context.LiftLogs
+                                 on elog.logLiftId equals liftlog.id
+                                 select new
+                                 {
+                                     elog.Id,
+                                     elog.elogId,
+                                     elog.logLiftId,
+                                     elevator.floorno,
+                                     elevator.weight,
+                                     elevator.dateTime,
+                                     liftlog.id
+
+                                 });*/
+
+            /* var q =  (from elevator in context.ElevatorLogs
+                            join elog in context.elevatorLoggings on elevator.Id equals elog.elogId
+                            join liftlog in context.LiftLogs
+                            on elog.logLiftId equals liftlog.id
+                            select new
+                            {
+                                elog.Id,
+                                elog.elogId,
+                                elog.logLiftId,
+                                elevator.floorno,
+                                elevator.weight,
+                                elevator.dateTime,
+                                liftlog.id
+
+                            });*/
+          //  return Ok(q);
         }
         private bool EmployeeAvailable(int id)
         {
